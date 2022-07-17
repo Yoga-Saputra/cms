@@ -25,5 +25,5 @@ Route::group(['prefix' => 'dashboard', 'middleware' => 'auth'], function () {
     Route::resource('categories', 'CategoryController');
     Route::resource('posts', 'PostController');
     Route::get('/trashed-post', 'PostController@trashed')->name('trashed-post.index');
-    Route::put('/posts/restore-trashed-post/{id}', 'PostController@restorePost')->name('restore-trashed-post.index');
+    Route::put('/posts/restore-trashed-post/{post}', 'PostController@restorePost')->name('restore-trashed-post.index');
 });

@@ -35,8 +35,8 @@
                         <tr>
                             <td>{{ $item + 1 }}</td>
                             <td>{{ $post->title }}</td>
-                            <td>{{ $post->description }}</td>
-                            <td>{{ $post->content }}</td>
+                            <td>{!! $post->description !!}</td>
+                            <td>{!! $post->content !!}</td>
                             <td>
                                 <img src="{{ asset('storage/' . $post->image) }}" class="rounded-square" width="100"
                                     height="100" alt="">
