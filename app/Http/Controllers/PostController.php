@@ -127,15 +127,20 @@ class PostController extends Controller
     {
         $post = Post::withTrashed()->where('id', $id)->first();
         if ($post->trashed()) {
+            if ($post->image != NULL) {
+                if(file_exists(storage_path('app/public/' . $post->image))){
+                    unlink(storage_path('app/public/' . $post->image));
+                }
+            }
             $post->forceDelete();
         }else{
             $post->delete();
         }
-
         return response()->json([
             'success' => true,
-            'message' => 'Data Berhasil Dihapus'
+            'message' => 'Data Berhasil Dihapus',
         ]);
+
     }
 
     public function trashed()

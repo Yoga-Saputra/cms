@@ -75,109 +75,112 @@
 
 @section('scripts')
     <script>
-        handleRestore = (id, restore) => {
-            const urlRestore = "{{ route('posts.index') }}" + '/' + 'restore-trashed-post' + '/' + id
-            Swal.fire({
-                title: 'Apakah anda yakin?',
-                text: 'Restore Post',
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed == true) {
-                    $.ajax({
-                        url: urlRestore,
-                        type: "PUT",
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        data: id,
-                        success: function(data, status, xhr) {
-                            Swal.fire(
-                                'Success!',
-                                data.message,
-                                'success'
-                            )
-                            setTimeout(() => {
-                                window.location.href =
-                                    '{{ route('trashed-post.index') }}';
-                            }, 500);
-                        },
-
-                        error: function(jqXhr, textStatus, errorMessage) {
-                            var values = '';
-                            jQuery.each(jqXhr.responseJSON.errors, function(key, value) {
-                                values += value
-                            });
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: values,
-                            })
-                        }
-                    });
-                }
-            })
-        }
-
-        handleDelete = (id, trashed) => {
-            var url = "{{ route('posts.index') }}" + '/' + id
-            console.log(url);
-            Swal.fire({
-                title: 'Apakah anda yakin?',
-                text: 'Hapus Post',
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-
-                if (result.isConfirmed == true) {
-                    var csrf_token = $('meta[name="csrf-token"]').attr('content');
-                    $.ajax({
-                        type: 'DELETE',
-                        url: url,
-                        data: {
-                            '_token': csrf_token
-                        },
-                        success: function(data, status, xhr) {
-                            if (data.success === true) {
+        $(document).ready(function() {
+            handleRestore = (id, restore) => {
+                const urlRestore = "{{ route('posts.index') }}" + '/' + 'restore-trashed-post' + '/' + id
+                Swal.fire({
+                    title: 'Apakah anda yakin?',
+                    text: 'Restore Post',
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed == true) {
+                        $.ajax({
+                            url: urlRestore,
+                            type: "PUT",
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            data: id,
+                            success: function(data, status, xhr) {
                                 Swal.fire(
-                                    'Deleted!',
+                                    'Success!',
                                     data.message,
                                     'success'
                                 )
-                                const trash = trashed
                                 setTimeout(() => {
-                                    window.location.href = trash ?
-                                        '{{ route('trashed-post.index') }}' :
-                                        '{{ route('posts.index') }}';
+                                    window.location.href =
+                                        '{{ route('trashed-post.index') }}';
                                 }, 500);
-                            } else {
+                            },
+
+                            error: function(jqXhr, textStatus, errorMessage) {
+                                var values = '';
+                                jQuery.each(jqXhr.responseJSON.errors, function(key,
+                                    value) {
+                                    values += value
+                                });
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Oops...',
-                                    text: data.message,
+                                    text: values,
                                 })
                             }
-                        },
-                        error: function(jqXhr, textStatus, errorMessage) {
-                            console.log(textStatus);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: jqXhr.responseJSON.message,
-                            })
-                        }
-                    })
-                }
-            })
+                        });
+                    }
+                })
+            }
 
-        }
+            handleDelete = (id, trashed) => {
+                var url = "{{ route('posts.index') }}" + '/' + id
+                console.log(url);
+                Swal.fire({
+                    title: 'Apakah anda yakin?',
+                    text: 'Hapus Post',
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+
+                    if (result.isConfirmed == true) {
+                        var csrf_token = $('meta[name="csrf-token"]').attr('content');
+                        $.ajax({
+                            type: 'DELETE',
+                            url: url,
+                            data: {
+                                '_token': csrf_token
+                            },
+                            success: function(data, status, xhr) {
+                                if (data.success === true) {
+                                    Swal.fire(
+                                        'Deleted!',
+                                        data.message,
+                                        'success'
+                                    )
+                                    const trash = trashed
+                                    setTimeout(() => {
+                                        window.location.href = trash ?
+                                            '{{ route('trashed-post.index') }}' :
+                                            '{{ route('posts.index') }}';
+                                    }, 500);
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: data.message,
+                                    })
+                                }
+                            },
+                            error: function(jqXhr, textStatus, errorMessage) {
+                                console.log(textStatus);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: jqXhr.responseJSON.message,
+                                })
+                            }
+                        })
+                    }
+                })
+
+            }
+        })
     </script>
 @endsection
