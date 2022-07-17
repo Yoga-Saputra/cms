@@ -24,10 +24,9 @@
             @endif
 
 
-            <form id="form-item" method="POST" enctype="multipart/form-data">
+            <form id="form-item1" method="POST" enctype="multipart/form-data">
                 @csrf
                 @if (isset($post))
-                    @csrf
                     @method('PUT')
                 @endif
                 <input type="hidden" id="id" value="{{ isset($post) ? $post->id : '' }}">
@@ -40,19 +39,21 @@
 
                 <div class="form-group">
                     <label for="description" class="control-label">Description</label>
-                    <textarea name="description" id="description" class="form-control" cols="30" rows="10">{{ isset($post) ? $post->description : '' }}</textarea>
+                    <input id="description" value="{!! isset($post) ? $post->description : '' !!}" type="hidden" name="description">
+                    <trix-editor input="description"></trix-editor>
                 </div>
 
                 <div class="form-group">
                     <label for="content" class="control-label">Content</label>
-                    <textarea name="content" id="content" class="form-control" cols="30" rows="10">{{ isset($post) ? $post->content : '' }}</textarea>
+                    <input id="content" value="{!! isset($post) ? $post->content : '' !!}" type="hidden" name="content">
+                    <trix-editor input="content"></trix-editor>
                 </div>
 
                 <div class="form-group">
                     <label for="published_at" class="control-label">Published At</label>
-                    <input type="date" name="published_at" id="published_at"
+                    <input type="date" name="published_at"
                         value="{{ isset($post) ? \Carbon\Carbon::parse($post->published_at)->format('Y-m-d') : '' }}"
-                        class="form-control">
+                        id="published_at"class="form-control">
                 </div>
 
                 <div class="form-group">
@@ -76,16 +77,19 @@
 
 @section('scripts')
     <script>
+        flatpickr('#published_at', {
+            enableTime: true
+        })
+
         $(function() {
-            $('#form-item').on('submit', function(e) {
+            $('#form-item1').on('submit', function(e) {
                 if (!e.preventDefault()) {
                     var id = $('#id').val();
-                    var data = $('#form-item').serializeArray();
                     if (!id)
                         $.ajax({
                             url: "{{ route('posts.store') }}",
                             type: "POST",
-                            data: new FormData($("#form-item")[0]),
+                            data: new FormData($("#form-item1")[0]),
                             contentType: false,
                             processData: false,
                             success: function(data) {
@@ -100,11 +104,17 @@
                                         '{{ route('posts.index') }}';
                                 }, 500);
                             },
-                            error: function(data) {
+                            error: function(jqXhr, textStatus, errorMessage) {
+                                var values = '';
+                                jQuery.each(jqXhr.responseJSON.errors, function(key, value) {
+                                    values += "<span style='color:red'> " + value +
+                                        "</span>" + "<br>"
+                                });
+
                                 Swal.fire({
+                                    icon: 'error',
                                     title: 'Oops...',
-                                    text: data.message,
-                                    type: 'error',
+                                    html: values,
                                     timer: '1500'
                                 })
                             }
@@ -112,17 +122,20 @@
                     else
                         $.ajax({
                             url: "{{ route('posts.index') }}" + '/' + id,
-                            type: "PUT",
+                            type: "POST",
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
-                            data: data,
+                            data: new FormData($("#form-item1")[0]),
+                            contentType: false,
+                            processData: false,
                             success: function(data, status, xhr) {
                                 Swal.fire(
                                     'Success!',
                                     data.message,
                                     'success'
                                 )
+
                                 setTimeout(() => {
                                     window.location.href =
                                         '{{ route('posts.index') }}';
@@ -132,12 +145,14 @@
                             error: function(jqXhr, textStatus, errorMessage) {
                                 var values = '';
                                 jQuery.each(jqXhr.responseJSON.errors, function(key, value) {
-                                    values += value
+                                    values += "<span style='color:red'> " + value +
+                                        "</span>" + "<br>"
                                 });
+
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Oops...',
-                                    text: values,
+                                    html: values
                                 })
                             }
                         });

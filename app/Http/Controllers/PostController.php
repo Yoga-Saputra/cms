@@ -101,19 +101,22 @@ class PostController extends Controller
     public function update(UpdatePostRequest $request, Post $post)
     {
         $input = $request->all();
-        $input['image'] = null;
+        $input['image'] = $post->image;
 
         if ($request->hasFile('image')) {
             $input['image'] = 'image/' . Str::slug($input['title'], '-') . '.' . $request->image->getClientOriginalExtension();
             $request->image->move(storage_path('/app/public/image'), $input['image']);
+
+            if(file_exists(storage_path('app/public/' . $post->image))){
+                unlink(storage_path('app/public/' . $post->image));
+            }
         }
 
-        $data = $post->update($input);
+        $post->update($input);
 
         return response()->json([
             'success' => true,
             'message' => 'Data Berhasil Diupdate',
-            'data' => $data
         ]);
     }
 
@@ -151,9 +154,9 @@ class PostController extends Controller
         ]);
     }
 
-    public function restorePost($id)
+    public function restorePost(Post $post)
     {
-        Post::withTrashed()->find($id)->restore();
+        $post->restore();
 
         return response()->json([
             'success' => true,

@@ -33,8 +33,8 @@
                 <div class="form-group">
                     <input type="hidden" id="id" value="{{ isset($category) ? $category->id : '' }}">
                     <label for="name" class="control-label"></label>
-                    <input type="text" name="name" id="name"
-                        value="{{ isset($category) ? $category->name : '' }}" class="form-control">
+                    <input id="name" type="hidden" name="name">
+                    <trix-editor input="name"></trix-editor>
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">{{ isset($category) ? 'Update' : 'Submit' }}</button>
@@ -48,6 +48,7 @@
     <script>
         $(function() {
             $('#form-item').on('submit', function(e) {
+                console.log('tes');
                 if (!e.preventDefault()) {
                     var id = $('#id').val();
                     var data = $('#form-item').serializeArray();
@@ -70,12 +71,16 @@
                                         '{{ route('categories.index') }}';
                                 }, 500);
                             },
-                            error: function(data) {
+                            error: function(jqXhr, textStatus, errorMessage) {
+                                var values = '';
+                                jQuery.each(jqXhr.responseJSON.errors, function(key, value) {
+                                    values += "<span style='color:red'> " + value +
+                                        "</span>" + "<br>"
+                                });
                                 Swal.fire({
+                                    icon: 'error',
                                     title: 'Oops...',
-                                    text: data.message,
-                                    type: 'error',
-                                    timer: '1500'
+                                    html: values
                                 })
                             }
                         });
@@ -102,12 +107,13 @@
                             error: function(jqXhr, textStatus, errorMessage) {
                                 var values = '';
                                 jQuery.each(jqXhr.responseJSON.errors, function(key, value) {
-                                    values += value
+                                    values += "<span style='color:red'> " + value +
+                                        "</span>" + "<br>"
                                 });
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Oops...',
-                                    text: values,
+                                    html: values
                                 })
                             }
                         });
