@@ -77,7 +77,6 @@
             let name = $(this).data('name');
             let id = $(this).data('id');
             var url = "{{ route('users') }}" + '/' + id + '/' + 'make-admin'
-
             Swal.fire({
                 title: 'Apakah anda yakin?',
                 text: 'Menjadikan user "' + name + '" menjadi admin',
