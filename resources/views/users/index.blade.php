@@ -96,6 +96,7 @@
                             '_token': csrf_token,
                             'id': id
                         },
+
                         success: function(data, status, xhr) {
                             console.log(status);
                             if (data.status === true) {
@@ -117,6 +118,7 @@
                                 })
                             }
                         },
+
                         error: function(jqXhr, textStatus, errorMessage) {
                             console.log(textStatus);
                             Swal.fire({
