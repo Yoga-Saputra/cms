@@ -6,12 +6,12 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="d-flex justify-content-start">
-                        <h4>Categories</h4>
+                        <h4>Tags</h4>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="d-flex justify-content-end">
-                        <a href="{{ route('categories.create') }}" class="btn btn-success">Add Category</a>
+                        <a href="{{ route('tags.create') }}" class="btn btn-success">Add Category</a>
                     </div>
                 </div>
             </div>
@@ -20,24 +20,25 @@
         <div class="card-body">
             <table class="table table-bordered table-hover table-checkable" id="post_datatable">
                 <thead>
-                    <tr class="table-info text-center">
-                        <th width="5%">No</th>
-                        <th witdh="65%">Name</th>
-                        <th width="30%">Action</th>
+                    <tr class="table-info">
+                        <th>No</th>
+                        <th>Name</th>
+                        <th>Post Count</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($categories as $item => $category)
-                        <tr class="text-center">
+                    @foreach ($tags as $item => $tag)
+                        <tr>
                             <td>{{ $item + 1 }}</td>
-                            <td>{!! $category->name !!}</td>
+                            <td>{!! $tag->name !!}</td>
+                            <td>{{ $tag->posts->count() }}</td>
                             <td>
-                                <a href="{{ route('categories.edit', $category->id) }}"
-                                    class="btn btn-info btn-sm">Edit</a>
+                                <a href="{{ route('tags.edit', $tag->id) }}" class="btn btn-info btn-sm">Edit</a>
 
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-danger btn-sm"
-                                    onclick="handleDelete({{ $category->id }})">
+                                    onclick="handleDelete({{ $tag->id }})">
                                     Delete
                                 </button>
                             </td>
@@ -52,11 +53,11 @@
 @section('scripts')
     <script>
         handleDelete = (id) => {
-            var url = "{{ route('categories.index') }}" + '/' + id
+            var url = "{{ route('tags.index') }}" + '/' + id
             console.log(url);
             Swal.fire({
                 title: 'Apakah anda yakin?',
-                text: 'Hapus Kategori',
+                text: 'Hapus Tag',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -82,7 +83,7 @@
                                 )
                                 setTimeout(() => {
                                     window.location.href =
-                                        '{{ route('categories.index') }}';
+                                        '{{ route('tags.index') }}';
                                 }, 500);
                             } else {
                                 Swal.fire({

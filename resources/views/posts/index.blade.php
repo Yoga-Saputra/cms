@@ -25,6 +25,7 @@
                         <th>Title</th>
                         <th>Description</th>
                         <th>Content</th>
+                        <th>Category</th>
                         <th>Image</th>
                         <th>Published At</th>
                         <th>Action</th>
@@ -37,6 +38,7 @@
                             <td>{{ $post->title }}</td>
                             <td>{!! $post->description !!}</td>
                             <td>{!! $post->content !!}</td>
+                            <td>{!! $post->name !!}</td>
                             <td>
                                 <img src="{{ asset('storage/' . $post->image) }}" class="rounded-square" width="100"
                                     height="100" alt="">

@@ -57,6 +57,43 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="category" class="control-label">Category</label>
+                    <select name="category" id="category" class="form-control">
+                        @foreach ($categories as $cat)
+                            @if (isset($post))
+                                <option value="{{ $cat->id }}" @if ($cat->id == old('category_id', $post->category_id)) selected @endif>
+                                    {!! $cat->name !!}
+                                </option>
+                            @else
+                                <option value="{{ $cat->id }}">
+                                    {!! $cat->name !!}
+                                </option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+
+                @if ($tags->count() > 0)
+                    <div class="form-group">
+                        <label for="tags" class="control-label">Tag</label>
+                        <select name="tags[]" id="tags" class="form-control js-example-basic-single tag-selector"
+                            multiple>
+                            @foreach ($tags as $tag)
+                                @if (isset($post))
+                                    <option value="{{ $tag->id }}" @if ($post->hasTag($tag->id)) selected @endif>
+                                        {!! $tag->name !!}
+                                    </option>
+                                @else
+                                    <option value="{{ $tag->id }}">
+                                        {!! $tag->name !!}
+                                    </option>
+                                @endif
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+
+                <div class="form-group">
                     <label for="image" class="control-label">Image</label>
                     @if (isset($post))
                         <div class="mt-3 mb-3">
@@ -66,22 +103,25 @@
                     @endif
                     <input type="file" name="image" id="image" class="form-control">
                 </div>
-
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-            </form>
         </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+        </form>
+    </div>
     </div>
 @endsection
 
 @section('scripts')
     <script>
+        $('.js-example-basic-single').select2();
+
         flatpickr('#published_at', {
             enableTime: true
         })
 
-        $(function() {
+        $(document).ready(function() {
             $('#form-item1').on('submit', function(e) {
                 if (!e.preventDefault()) {
                     var id = $('#id').val();
@@ -93,16 +133,30 @@
                             contentType: false,
                             processData: false,
                             success: function(data) {
-                                Swal.fire({
-                                    title: 'Success!',
-                                    text: data.message,
-                                    type: 'success',
-                                    timer: '5000'
-                                })
-                                setTimeout(() => {
-                                    window.location.href =
-                                        '{{ route('posts.index') }}';
-                                }, 500);
+                                if (data.status == true) {
+                                    Swal.fire({
+                                        title: 'Success!',
+                                        text: data.message,
+                                        icon: 'success',
+                                        timer: '5000'
+                                    })
+                                    setTimeout(() => {
+                                        window.location.href =
+                                            '{{ route('posts.index') }}';
+                                    }, 500);
+                                } else {
+                                    Swal.fire({
+                                        title: 'Ops!',
+                                        icon: 'error',
+                                        text: data.message,
+                                        timer: '5000'
+                                    })
+
+                                    setTimeout(() => {
+                                        window.location.href =
+                                            '{{ route('categories.index') }}';
+                                    }, 1500);
+                                }
                             },
                             error: function(jqXhr, textStatus, errorMessage) {
                                 var values = '';
