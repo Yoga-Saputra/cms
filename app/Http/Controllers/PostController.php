@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use App\Post;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Requests\Posts\CreatePostRequest;
 use App\Http\Requests\Posts\UpdatePostRequest;
+use App\Tag;
 use Carbon\Carbon;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('verifyCategoryCount')->only(['store']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +24,11 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
+        $posts = Post::join('categories as c', 'c.id', 'posts.category_id')
+            ->select([
+                'c.name',
+                'posts.*'
+            ])->get();
         return view('posts.index', [
             'posts' => $posts
         ]);
@@ -31,7 +41,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        return view('posts.create')->with('categories', Category::all())->with('tags', Tag::all());
     }
 
     /**
@@ -44,6 +54,7 @@ class PostController extends Controller
     {
         $input = $request->all();
         $input['image'] = null;
+        $input['category_id'] = $input['category'];
 
         if ($request->hasFile('image')) {
             $input['image'] = 'image/' . Str::slug($input['title'], '-') . '.' . $request->image->getClientOriginalExtension();
@@ -51,9 +62,15 @@ class PostController extends Controller
         }
 
         $data = Post::create($input);
+
+        // save data of relationship many to many
+        if ($request->tags) {
+            $data->tags()->attach($request->tags);
+        }
+
         if ($data) {
             return response()->json([
-                'success' => true,
+                'status' => true,
                 'message' => 'Data Successfully Created',
                 'data' => $data
             ], 200);
@@ -87,7 +104,9 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         return view('posts.create',[
-            'post' => $post
+            'categories' => Category::all(),
+            'post' => $post,
+            'tags' => Tag::all()
         ]);
     }
 
@@ -102,6 +121,7 @@ class PostController extends Controller
     {
         $input = $request->all();
         $input['image'] = $post->image;
+        $input['category_id'] = $input['category'];
 
         if ($request->hasFile('image')) {
             $input['image'] = 'image/' . Str::slug($input['title'], '-') . '.' . $request->image->getClientOriginalExtension();
@@ -113,6 +133,10 @@ class PostController extends Controller
         }
 
         $post->update($input);
+
+        if ($request->tags) {
+            $post->tags()->sync($request->tags);
+        }
 
         return response()->json([
             'success' => true,

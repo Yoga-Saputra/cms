@@ -20,12 +20,15 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <link href="{{ asset('css/sweetalert2.css') }}" rel="stylesheet" type="text/css" />
     <script src="{{ asset('js/sweetalert2.all.js') }}"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.1.1/trix.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
+    {{-- <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" /> --}}
     @yield('style-css')
 </head>
 
@@ -102,8 +105,17 @@
                     <div class="row">
                         <div class="col-md-2">
                             <ul class="list-group">
+                                @if (auth()->user()->isAdmin())
+                                    <li class="list-group-item">
+                                        <a href="{{ route('users') }}">Users</a>
+                                    </li>
+                                @endif
+
                                 <li class="list-group-item">
                                     <a href="{{ route('posts.index') }}">Posts</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="{{ route('tags.index') }}">Tags</a>
                                 </li>
                                 <li class="list-group-item">
                                     <a href="{{ route('categories.index') }}">Categories</a>
@@ -128,16 +140,31 @@
 
     @include('plugins.datatables')
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.1.1/trix.js"></script>
+    {{-- <script src="{{ asset('js/core/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/core/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/core/jquery.slimscroll.min.js') }}"></script>
+    <script src="{{ asset('js/core/jquery.scrollLock.min.js') }}"></script>
+    <script src="{{ asset('js/core/jquery.countTo.min.js') }}"></script>
+    <script src="{{ asset('js/core/jquery.appear.min.js') }}"></script>
+    <script src="{{ asset('js/core/js.cookie.min.js') }}"></script> --}}
 
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+    {{-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script> --}}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"
+        integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"
         integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous">
     </script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.1.1/trix.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     @yield('scripts')
 </body>
 

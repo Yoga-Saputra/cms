@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Category;
-use App\Http\Requests\Categories\CreateCategoryRequest;
-use App\Http\Requests\Categories\UpdateCategoryRequest;
+use App\Tag;
+use App\Http\Requests\Tags\CreateTagRequest;
+use App\Http\Requests\Tags\UpdateTagRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class CategoryController extends Controller
+class TagController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,9 +17,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
-        return view('categories.index', [
-            'categories' => $categories
+        $tags = Tag::all();
+        return view('tags.index', [
+            'tags' => $tags
         ]);
     }
 
@@ -30,7 +30,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('categories.create');
+        return view('tags.create');
     }
 
     /**
@@ -39,13 +39,13 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateCategoryRequest $request)
+    public function store(CreateTagRequest $request)
     {
         $this->validate($request, [
 
         ]);
 
-        $data = Category::create([
+        $data = Tag::create([
             'name' => $request->name
         ]);
 
@@ -55,9 +55,9 @@ class CategoryController extends Controller
             'data' => $data
         ]);
 
-        // session()->flash('success', 'Category created successfully');
+        // session()->flash('success', 'Tag created successfully');
 
-        // return redirect()->route('categories.index');
+        // return redirect()->route('tags.index');
     }
 
     /**
@@ -77,10 +77,10 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Category $category)
+    public function edit(Tag $tag)
     {
-        return view('categories.create',[
-            'category' => $category
+        return view('tags.create',[
+            'Tag' => $tag
         ]);
     }
 
@@ -91,10 +91,10 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateCategoryRequest $request, Category $category)
+    public function update(UpdateTagRequest $request, Tag $tag)
     {
 
-        $data = $category->update([
+        $data = $tag->update([
             'name' => $request->name
         ]);
 
@@ -104,9 +104,9 @@ class CategoryController extends Controller
             'data' => $data
         ]);
 
-        // session()->flash('success', 'Category update successfully');
+        // session()->flash('success', 'Tag update successfully');
 
-        // return redirect()->route('categories.index');
+        // return redirect()->route('tags.index');
     }
 
     /**
@@ -115,19 +115,20 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category)
+    public function destroy(Tag $tag)
     {
-        if ($category->posts->count() > 0) {
+        if ($tag->posts->count() > 0) {
             return response()->json([
                 'success' => false,
-                'message' => 'Category cannot be delete because it has some post'
-            ]);
-        }else{
-            $category->delete();
-            return response()->json([
-                'success' => true,
-                'message' => 'Data Berhasil Dihapus'
+                'message' => 'Tag cannot be delete, because it is associated to some posts'
             ]);
         }
+
+        $tag->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data Berhasil Dihapus'
+        ]);
     }
 }
